@@ -1,0 +1,26 @@
+{
+  "name": "_worker_renthub",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "work": "npx tsc && node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "bull": "^4.16.4",
+    "dotenv": "^16.4.5",
+    "form-data": "^4.0.1",
+    "fs": "^0.0.1-security",
+    "ioredis": "^5.4.1",
+    "typescript": "^5.6.3",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/bull": "^3.15.9",
+    "@types/ioredis": "^4.28.10"
+  }
+}
