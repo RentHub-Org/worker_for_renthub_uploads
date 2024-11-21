@@ -18,7 +18,8 @@ export default async function (job) {
 				console.log("DEBUG: upload errored : ", status.Message);
 				BullQueues.notificationGlobalQueuePoll.add({
 					message: `Upload failed for ${fileContext.fileName} with error: ${status.Message}`,
-					telegramId: fileContext.user.telegram
+					telegramId: fileContext.user.telegram,
+					webhookUrl: fileContext.user.webhook
 				});
 				BullQueues.redisGlobalFinalizer.add(fileContext);
 				break;
@@ -31,6 +32,8 @@ export default async function (job) {
 				BullQueues.notificationGlobalQueuePoll.add({
 					message: `Uploaded Sccessfully for file ${fileContext.fileName} @${status.FileHash}`,
 					telegramId: fileContext.user.telegram
+					webhookUrl: fileContext.user.webhook
+				});
 				});
 				BullQueues.redisGlobalFinalizer.add(fileContext);
 				break;

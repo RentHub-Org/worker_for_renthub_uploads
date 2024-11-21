@@ -30,6 +30,7 @@ async function main(){
 			user:{
 				address: "0x1234567890",
 				telegram: "p_soni2022",
+				webhook: "webhook here",
 			},
 			taskId: v6(),
 			fileName: "tester.js",
