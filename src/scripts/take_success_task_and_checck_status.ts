@@ -31,9 +31,8 @@ export default async function (job) {
 				console.log("DEBUG: upload completd at:", status.FileHash);
 				BullQueues.notificationGlobalQueuePoll.add({
 					message: `Uploaded Sccessfully for file ${fileContext.fileName} @${status.FileHash}`,
-					telegramId: fileContext.user.telegram
+					telegramId: fileContext.user.telegram,
 					webhookUrl: fileContext.user.webhook
-				});
 				});
 				BullQueues.redisGlobalFinalizer.add(fileContext);
 				break;
@@ -50,7 +49,7 @@ export default async function (job) {
 			error: e
 		});
 	}finally{
-		  await new Promise((resolve) => {setTimeout(resolve, 100);});
+		  await new Promise((resolve) => {setTimeout(resolve, (parseInt(process.env.POLLING_DELAY) || 300));});
 	}
 	return;
 }

@@ -34,7 +34,7 @@ async function main(){
 			},
 			taskId: v6(),
 			fileName: "tester.js",
-			filePath: __dirname + "\\chunk_1.js",
+			filePath: __dirname + "\\upload.json",
 			nonce: 0 , // this defines the no of retries fro thiis file..
 		});
 	BullQueues.taskGlobalQueuePoll.process(take_task_and_upload);
