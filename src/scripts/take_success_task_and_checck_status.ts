@@ -3,8 +3,14 @@ import BullQueues from "../redis"
 export default async function (job) {
 	const fileContext = job.data;
 	try{
-		const status = await BtfsInstance.getStatus(fileContext.btfsUploadId);
 		const priority = Date.now() - fileContext.enqueuedAt;
+		const status = await BtfsInstance.getStatus(fileContext.btfsUploadId).catch((err) => {console.log("Got error...", err);});
+		if(!status){
+			// hear meand it coudent get the status of the file from the btfs node....
+			// this is most probabely because the node is not in the miner mode...
+			BullQueues.redisLocalConnSuccess.add(fileContext, { priority });
+			return;
+		}
 		switch(status.Status){
 			case 'init':
 			case 'submit':
@@ -14,6 +20,7 @@ export default async function (job) {
 				fileContext.rentalStatus = {
 					...status
 				};
+				fileContext.workerId = process.env.WORKER_ID;
 				BullQueues.redisGlobalFinalizer.add(fileContext);
 				console.log("DEBUG: upload errored : ", status.Message);
 				BullQueues.notificationGlobalQueuePoll.add({
@@ -21,12 +28,12 @@ export default async function (job) {
 					telegramId: fileContext.user.telegram,
 					webhookUrl: fileContext.user.webhook
 				});
-				BullQueues.redisGlobalFinalizer.add(fileContext);
 				break;
 			case 'complete':
 				fileContext.rentalStatus = {
 					...status
 				};
+				fileContext.workerId = process.env.WORKER_ID;
 				BullQueues.redisGlobalFinalizer.add(fileContext);
 				console.log("DEBUG: upload completd at:", status.FileHash);
 				BullQueues.notificationGlobalQueuePoll.add({
@@ -34,7 +41,6 @@ export default async function (job) {
 					telegramId: fileContext.user.telegram,
 					webhookUrl: fileContext.user.webhook
 				});
-				BullQueues.redisGlobalFinalizer.add(fileContext);
 				break;
 			default:
 				BullQueues.redisLocalConnSuccess.add(fileContext, { priority });

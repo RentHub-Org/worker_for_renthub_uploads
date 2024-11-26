@@ -1,7 +1,7 @@
 import BullQueues from "./redis";
 import Btfs from "./btfs_provider"
 import fs from "fs";
-import { v6 } from "uuid";
+import { stringify, v6 } from "uuid";
 import take_task_and_upload from "./scripts/take_task_and_upload_to_btfs";
 import take_success_task_and_checck_status from "./scripts/take_success_task_and_checck_status";
 // first do checks for the existence of a btfs node...
@@ -25,25 +25,25 @@ async function main(){
 	
 	// now running the following commands is fine.....
 	// which are to uploads....
-	BullQueues.taskGlobalQueuePoll.add(
-		{
-			user:{
-				address: "0x1234567890",
-				telegram: "p_soni2022",
-				webhook: "webhook here",
-			},
-			taskId: v6(),
-			fileName: "tester.js",
-			filePath: __dirname + "\\upload.json",
-			nonce: 0 , // this defines the no of retries fro thiis file..
-		});
+	// BullQueues.taskGlobalQueuePoll.add(
+	//	{
+	//		user:{
+	//			address: "0x1234567890",
+	//			telegram: "p_soni2022",
+	//			webhook: "webhook here",
+	//		},
+	//		taskId: v6(),
+	//		fileName: "tester.js",
+	//		filePath: __dirname + "\\upload.json",
+	//		nonce: 0 , // this defines the no of retries fro thiis file..
+	//	});
 	BullQueues.taskGlobalQueuePoll.process(take_task_and_upload);
   	BullQueues.redisLocalConnSuccess.process(take_success_task_and_checck_status);
-	BullQueues.redisLocalConnError.process((job)=>{console.log("ERRORED _internal",job.data)});
+	BullQueues.redisLocalConnError.process((job)=>{console.log("ERRORED _internal",job.data , stringify(job.data.tries))});
 
 	// these two queues to be handle sin the original core-be of renthub.
 	BullQueues.notificationGlobalQueuePoll.process((job)=>{console.log(`NOTIFIER: message for ${job.data.telegramId} : ${job.data.message}`)});
-	BullQueues.redisGlobalFinalizer.process((job)=>{console.log("FINALIZER: ",job.data)});
+	// BullQueues.redisGlobalFinalizer.process((job)=>{console.log("FINALIZER: ",job.data)});	
 
 }
 
