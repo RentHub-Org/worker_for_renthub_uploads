@@ -3,18 +3,21 @@ import BullQueues from "../redis"
 export default async function (job) {
 	const fileContext = job.data;
 	try{
-		const priority = Date.now() - fileContext.enqueuedAt;
+		// const priority = Date.now() - fileContext.enqueuedAt;
 		const status = await BtfsInstance.getStatus(fileContext.btfsUploadId).catch((err) => {console.log("Got error...", err);});
 		if(!status){
 			// hear meand it coudent get the status of the file from the btfs node....
 			// this is most probabely because the node is not in the miner mode...
-			BullQueues.redisLocalConnSuccess.add(fileContext, { priority });
+
+			// BullQueues.redisLocalConnSuccess.add(fileContext, { priority });
+			BullQueues.redisLocalConnSuccess.add(fileContext);
 			return;
 		}
 		switch(status.Status){
 			case 'init':
 			case 'submit':
-				BullQueues.redisLocalConnSuccess.add(fileContext, { priority });
+				// BullQueues.redisLocalConnSuccess.add(fileContext, { priority });
+				BullQueues.redisLocalConnSuccess.add(fileContext);
 				break;
 			case 'error':
 				fileContext.rentalStatus = {
@@ -24,7 +27,11 @@ export default async function (job) {
 				BullQueues.redisGlobalFinalizer.add(fileContext);
 				console.log("DEBUG: upload errored : ", status.Message);
 				BullQueues.notificationGlobalQueuePoll.add({
-					message: `Upload failed for ${fileContext.fileName} with error: ${status.Message}`,
+					message: {
+						message: `Uploaded Sccessfully for file ${fileContext.fileName}`,
+						hash: status.FileHash,
+						fileName: fileContext.fileName
+					},
 					telegramId: fileContext.user.telegram,
 					webhookUrl: fileContext.user.webhook
 				});
@@ -37,13 +44,18 @@ export default async function (job) {
 				BullQueues.redisGlobalFinalizer.add(fileContext);
 				console.log("DEBUG: upload completd at:", status.FileHash);
 				BullQueues.notificationGlobalQueuePoll.add({
-					message: `Uploaded Sccessfully for file ${fileContext.fileName} @${status.FileHash}`,
+					message: {
+						message: `Uploaded Sccessfully for file ${fileContext.fileName}`,
+						hash: status.FileHash,
+						fileName: fileContext.fileName
+					},
 					telegramId: fileContext.user.telegram,
 					webhookUrl: fileContext.user.webhook
 				});
 				break;
 			default:
-				BullQueues.redisLocalConnSuccess.add(fileContext, { priority });
+				// BullQueues.redisLocalConnSuccess.add(fileContext, { priority });
+				BullQueues.redisLocalConnSuccess.add(fileContext);
 				break;
 		}
     	// const currentTime = Date.now();

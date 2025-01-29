@@ -31,7 +31,7 @@ export default async function (job){
 			fileContext.tries.push(tryDetails);
 			fileContext.enqueuedAt = Date.now();
 			BullQueues.redisLocalConnSuccess.add(fileContext, {priority: fileContext.enqueuedAt});
-			
+			console.log("LAYER ONE: Added the file for upload: ", fileContext.fileName);
 			// now we push the data of the file in the context
 		}catch(e){
 			console.log(e);
@@ -46,6 +46,7 @@ export default async function (job){
 			BullQueues.taskGlobalQueuePoll.add(fileContext);
 			// meaning we coudent add the file..
 			// a call to remove it from the 
+			console.log("LAYER ONE: Error while adding the file for upload: ", fileContext.fileName, e);
 		}	
 	}catch(error){
 		await job.moveToFailed({ message: error.message }, true);
