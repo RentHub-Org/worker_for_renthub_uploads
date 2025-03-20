@@ -3,8 +3,7 @@ import Btfs from "./btfs_provider"
 import { stringify, v6 } from "uuid";
 import take_task_and_upload from "./scripts/take_task_and_upload_to_btfs";
 import take_success_task_and_checck_status from "./scripts/take_success_task_and_checck_status";
-// first do checks for the existence of a btfs node...
-//
+
 async function main(){
 	await Btfs.ping().then(()=>{
 		console.log("✅ Btfs node is present and accesible...");
@@ -14,7 +13,6 @@ async function main(){
 		process.exit(1);
 	});
 
-// initiate the queues connection
 	await BullQueues.init().then(()=>{
 		console.log("✅ Queues connection was established.");
 	}).catch((err)=>{

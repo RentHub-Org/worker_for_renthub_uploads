@@ -28,10 +28,11 @@ export default async function (job) {
 				console.log("DEBUG: upload errored : ", status.Message);
 				BullQueues.notificationGlobalQueuePoll.add({
 					message: {
-						message: `Uploaded Sccessfully for file ${fileContext.fileName}`,
+						message: `Uploaded failed for file ${fileContext.fileName}`,
 						hash: status.FileHash,
 						fileName: fileContext.fileName
 					},
+					metadata: fileContext.metadata || {},
 					telegramId: fileContext.user.telegram,
 					webhookUrl: fileContext.user.webhook
 				});
@@ -49,6 +50,7 @@ export default async function (job) {
 						hash: status.FileHash,
 						fileName: fileContext.fileName
 					},
+					metadata: fileContext.metadata || {},
 					telegramId: fileContext.user.telegram,
 					webhookUrl: fileContext.user.webhook
 				});
