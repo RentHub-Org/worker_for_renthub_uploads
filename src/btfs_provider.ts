@@ -17,6 +17,7 @@ class BtfsProvider{
 	async ping() {
 		try {
 			const response = await axios.get(this.btfs_gateway_endpoint+ "btfs/QmSnAFu4to9G6VpKSzsc7cQ7cg9TMQYVLbsgsowaPWgxkB");
+			// const response = await axios.get(this.btfs_api_endpoint+"btfs/QmNytdpG1FstSmR7eo547A8o9EdF7cFe1tcExunu8uEgDc");
 			if (response.status != 200) throw new Error("Error pinging BTFS");
 		} catch (err) {throw new Error("Error pinging BTFS:"+err);}
 	}
@@ -25,7 +26,7 @@ class BtfsProvider{
 			const fileStream = fs.createReadStream(filPath)
 			const form = new formData();
 			form.append("file",fileStream);
-			const response = await axios.post(this.btfs_api_endpoint+"api/v0/add",form,{
+			const response = await axios.post(this.btfs_api_endpoint+"api/v0/add?to-blockchain=true&token="+process.env.BTFS_TOKEN,form,{
 				headers: form.getHeaders()
 			});
 			return response.data;
@@ -36,7 +37,7 @@ class BtfsProvider{
 	}
 	async removeFile(fileHash){
 		try{
-			const response = await axios.post(this.btfs_api_endpoint+"api/v1/files/rm?arg="+fileHash);
+			const response = await axios.post(this.btfs_api_endpoint+"api/v1/files/rm?arg="+fileHash+"&token="+process.env.BTFS_TOKEN);
 			return response.data;
 		}catch(err){
 			console.log("BTFS_PROVIDER_removeFileError:"+err);
@@ -46,7 +47,7 @@ class BtfsProvider{
 	async uploadFile(fileHash, rentforDays?){
 		rentforDays = rentforDays || 31;
 		try{
-			const response = await axios.post(this.btfs_api_endpoint+`api/v1/storage/upload?arg=${fileHash}&storage-length=${rentforDays}`);
+			const response = await axios.post(this.btfs_api_endpoint+`api/v1/storage/upload?arg=${fileHash}&storage-length=${rentforDays}`+"&token="+process.env.BTFS_TOKEN);
 			return response.data;
 		}catch(err){
 			console.log("BTFS_PROVIDER_uploadFileError:"+err);
@@ -58,7 +59,7 @@ class BtfsProvider{
 			throw new Error("ID is required to get status from BTFS.");
 		}
 		try{
-			const response = await axios.post(this.btfs_api_endpoint+"api/v1/storage/upload/status?arg="+ID);
+			const response = await axios.post(this.btfs_api_endpoint+"api/v1/storage/upload/status?arg="+ID+"&token="+process.env.BTFS_TOKEN);
 			return response.data;
 		}catch(err){
 			console.log("BTFS_PROVIDER_getStatusError:"+err);

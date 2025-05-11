@@ -15,9 +15,9 @@ export default async function (job){
 		fileContext.nonce = fileContext.nonce + 1; // indexing the tries on uploads.
 		try{
 			const response = await BtfsInstance.addFile(fileContext.filePath);
-		const upload = await BtfsInstance.uploadFile(response.Hash, fileContext.rentForDays);
-		fileContext.btfsHash = response.Hash;
-		fileContext.btfsUploadId = upload.ID; // to check the status....
+			const upload = await BtfsInstance.uploadFile(response.Hash, fileContext.rentForDays);
+			fileContext.btfsHash = response.Hash;
+			fileContext.btfsUploadId = upload.ID; // to check the status....
 			if(!fileContext.tries){
 				fileContext.tries = [];
 			}
