@@ -11,7 +11,7 @@ pipeline{
     stages{
         stage("Creating the image"){
             steps {
-                sh "docker build -t priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}"
+                sh "docker build -t priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT} ."
                 echo "Created the Docker-image named priyanshoe/worker-image-jenkins:COMMIT"
             }
         }
