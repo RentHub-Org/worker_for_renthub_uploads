@@ -11,7 +11,7 @@ pipeline{
     stages{
         stage("Creating the image and pushing"){
             steps {
-                withDockerRegistry(credentialsId: 'docker-credentials-priyanshu') {
+                withDockerRegistry(credentialsId: 'docker-credentials-priyanshu', url: 'https://index.docker.io/v1/') {
                     sh "docker build -t priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT} ."
                     echo "Created the Docker-image named priyanshoe/worker-image-jenkins:COMMIT"
                     sh "docker push priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}"
