@@ -6,7 +6,7 @@ pipeline{
             SECRET_PHRASE_TO_ACCESS_TOKEN = credentials('secret-phrase-to-access-token')
     }
     stages{
-        stage("Creating the image!"){
+        stage("Creating the image!!"){
             steps {
                 sh "docker build -t priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT} ."
                 echo "Created the Docker-image named priyanshoe/worker-image-jenkins:COMMIT"
