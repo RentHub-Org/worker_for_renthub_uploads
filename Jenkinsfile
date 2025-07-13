@@ -8,7 +8,7 @@ pipeline{
     stages{
         stage("Creating the image and pushing"){
             steps {
-                withDockerRegistry(credentialsId: 'docker-credentials-priyanshu' toolName: 'Docker') {
+                withDockerRegistry(credentialsId: 'docker-credentials-priyanshu', toolName: 'Docker') {
                     sh "docker build -t priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT} ."
                     echo "Created the Docker-image named priyanshoe/worker-image-jenkins:COMMIT"
                     sh "docker push priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}"
