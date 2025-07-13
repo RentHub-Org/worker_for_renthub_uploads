@@ -1,5 +1,8 @@
 pipeline{
     agent any
+    tools {
+        dockerTool 'Docker'  // This matches the name from Global Tool Configuration
+    }
     environment {
             CORE_INSTANCE_IP = credentials('core-instance-ip-gcp')
             BTFS_IP_GCP = credentials('btfs-ip-gcp')
@@ -8,7 +11,7 @@ pipeline{
     stages{
         stage("Creating the image and pushing"){
             steps {
-                withDockerRegistry(credentialsId: 'docker-credentials-priyanshu', toolName: 'Docker') {
+                withDockerRegistry(credentialsId: 'docker-credentials-priyanshu') {
                     sh "docker build -t priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT} ."
                     echo "Created the Docker-image named priyanshoe/worker-image-jenkins:COMMIT"
                     sh "docker push priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}"
