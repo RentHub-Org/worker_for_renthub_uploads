@@ -54,7 +54,7 @@ pipeline{
                         -e BTFS_HOST=${BTFS_IP_GCP} \
                         -e BTFS_PORT_API=8080 \
                         -e BTFS_API_ENDPOINT=5001
-                        -e BTFS_TOKEN_ACCESS_URL="http://$CORE_INSTANCE_IP:3121/latest-token?password=${SECRET_PHRASE_TO_ACCESS_TOKEN}"
+                        -e BTFS_TOKEN_ACCESS_URL="http://$CORE_INSTANCE_IP:3121/latest-token?password=${SECRET_PHRASE_TO_ACCESS_TOKEN}" \
                         priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}
 
                     echo "Deployment complete."
