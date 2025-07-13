@@ -1,5 +1,8 @@
 pipeline{
     agent any
+    tool{
+        dockerTool 'Docker'
+    }
     environment {
             CORE_INSTANCE_IP = credentials('core-instance-ip-gcp')
             BTFS_IP_GCP = credentials('btfs-ip-gcp')
