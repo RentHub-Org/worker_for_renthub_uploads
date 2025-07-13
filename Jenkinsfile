@@ -25,7 +25,7 @@ pipeline{
             steps {
                 sshagent(credentials: ['ssh-core-instance-gcp']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no priyanshoe_official@$CORE_INSTANCE_IP << 'EOF'
+                    ssh -o StrictHostKeyChecking=no priyanshoe_official@$CORE_INSTANCE_IP << EOF
                     echo "Stopping running container (if any)..."
                     sudo docker stop renthub_worker_one || true
                     sudo docker rm renthub_worker_one || true
