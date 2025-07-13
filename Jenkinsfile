@@ -33,7 +33,7 @@ pipeline{
                     echo "Removing old image..."
                     sudo docker images 'priyanshoe/renthub-worker-image-jenkins' --format '{{.Repository}}:{{.Tag}}' | xargs -r sudo docker rmi || true
 
-                    echo "Pulling new image..."
+                    echo "Pulling new image...: priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}"
                     sudo docker pull priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}
 
                     echo "Running new container..."
