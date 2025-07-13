@@ -1,13 +1,9 @@
 pipeline{
     agent any
-    tools {
-            nodejs 'nodejs-24-3-0'
-    }
     environment {
-            MONGO_URI = "mongodb://172.28.254.224:27017/?authSource=admin"
-            MONGO_USERNAME = credentials('mongodb-username')
-            MONGO_PASSWORD = credentials('mongodb-password')
             CORE_INSTANCE_IP = credentials('core-instance-ip-gcp')
+            BTFS_IP_GCP = credentials('btfs-ip-gcp')
+            SECRET_PHRASE_TO_ACCESS_TOKEN = credentials('secret-phrase-to-access-token')
     }
     stages{
         stage("Creating the image"){
@@ -48,7 +44,25 @@ pipeline{
                     sudo docker pull priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}
 
                     echo "Running new container..."
-                    sudo docker run -d --name renthub_worker_one -p priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}
+                    sudo docker run -d \
+                        --name renthub_worker_one \
+                        -v /mnt/common-storage:/uploads \
+                        -e WORKER_ID="3i7ac" \
+                        -e POLLING_DELAY=500 \
+                        -e GLOBAL_REDIS_HOST="localhost" \
+                        -e GLOBAL_REDIS_PORT=6379 \
+                        -e LOCAL_REDIS_HOST="localhost" \
+                        -e LOCAL_REDIS_PORT=6379 \
+                        -e TASK_GLOBAL_QUEUE_NAME="work_uploads" \
+                        -e NOTIFICATION_GLOBAL_QUEUE_NAME="notifications" \
+                        -e REDIS_GLOBAL_FINALIZE="finalizer" \
+                        -e REDIS_LOCAL_CONN_SUCCESS="success_uploading" \
+                        -e REDIS_LOCAL_CONN_ERROR="error_uploding" \
+                        -e BTFS_HOST=${BTFS_IP_GCP} \
+                        -e BTFS_PORT_API=8080 \
+                        -e BTFS_API_ENDPOINT=5001
+                        -e BTFS_TOKEN_ACCESS_URL="http://$CORE_INSTANCE_IP:3121/latest-token?password=${SECRET_PHRASE_TO_ACCESS_TOKEN}"
+                        priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}
 
                     echo "Deployment complete."
                     EOF
