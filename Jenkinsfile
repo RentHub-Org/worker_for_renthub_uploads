@@ -58,7 +58,6 @@ pipeline{
                         priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}
 
                     echo "Deployment complete."
-                    EOF
                     '''
                 }
                 echo "Updated the deployment of the worker in the core-Instance."
