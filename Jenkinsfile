@@ -3,7 +3,7 @@ pipeline{
     stages{
         stage("init"){
             steps{
-                echo "Yo running the pipe for the _worker_"
+                echo "Yo running the pipe for the  _worker_"
             } 
         }
     }
