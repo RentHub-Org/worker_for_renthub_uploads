@@ -36,7 +36,7 @@ pipeline{
                     echo "Pulling new image...: priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}"
                     sudo docker pull priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}
 
-                    echo "Running new container..."
+                    echo "Running new container...."
                     sudo docker run -d \
                         --name renthub_worker_one \
                         -v /mnt/common-storage:/uploads \
