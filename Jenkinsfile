@@ -31,7 +31,7 @@ pipeline{
                     sudo docker rm renthub_worker_one || true
 
                     echo "Removing old image..."
-                    sudo docker images 'your-image' --format '{{.Repository}}:{{.Tag}}' | xargs -r sudo docker rmi || true
+                    sudo docker images 'priyanshoe/renthub-worker-image-jenkins' --format '{{.Repository}}:{{.Tag}}' | xargs -r sudo docker rmi || true
 
                     echo "Pulling new image..."
                     sudo docker pull priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}
