@@ -40,11 +40,12 @@ pipeline{
                     sudo docker run -d \
                         --name renthub_worker_one \
                         -v /mnt/common-storage:/uploads \
+                        --network renthub-net \
                         -e WORKER_ID="3i7ac" \
                         -e POLLING_DELAY=500 \
-                        -e GLOBAL_REDIS_HOST="localhost" \
+                        -e GLOBAL_REDIS_HOST="redis_service" \
                         -e GLOBAL_REDIS_PORT=6379 \
-                        -e LOCAL_REDIS_HOST="localhost" \
+                        -e LOCAL_REDIS_HOST="redis_service" \
                         -e LOCAL_REDIS_PORT=6379 \
                         -e TASK_GLOBAL_QUEUE_NAME="work_uploads" \
                         -e NOTIFICATION_GLOBAL_QUEUE_NAME="notifications" \
