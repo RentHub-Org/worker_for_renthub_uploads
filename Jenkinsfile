@@ -6,26 +6,16 @@ pipeline{
             SECRET_PHRASE_TO_ACCESS_TOKEN = credentials('secret-phrase-to-access-token')
     }
     stages{
-        stage("Creating the image"){
+        stage("Creating the image and pushing"){
             steps {
-                sh "docker build -t priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT} ."
-                echo "Created the Docker-image named priyanshoe/worker-image-jenkins:COMMIT"
-            }
-        }
-        stage("Pushing the image"){
-            steps {
-                withDockerRegistry(credentialsId: 'docker-credentials-priyanshu') {
-                    sh "docker push priyanshoe/renthub-worker-jenkins:${GIT_COMMIT}"
+                withDockerRegistry(credentialsId: 'docker-credentials-priyanshu' toolName: 'Docker') {
+                    sh "docker build -t priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT} ."
+                    echo "Created the Docker-image named priyanshoe/worker-image-jenkins:COMMIT"
+                    sh "docker push priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}"
                     echo "Pushing the image!"
                     sh "docker rmi priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}"
                     echo "Done step!"
                 }
-            }
-        }
-        stage("Deleting the local-image"){
-            steps {
-                sh "docker rmi priyanshoe/renthub-worker-image-jenkins:${GIT_COMMIT}"
-                echo "Deleted the iamge locally!"
             }
         }
         stage("Running in the Worker Instance in EC2"){
