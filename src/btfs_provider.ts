@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import axios from "axios"
+import crypto from 'crypto';
 import fs from 'fs';
 import formData from "form-data";
 
@@ -8,6 +9,7 @@ class BtfsProvider{
 	static instance: BtfsProvider;
 	private btfs_gateway_endpoint = "http://"+process.env.BTFS_HOST+":"+process.env.BTFS_PORT_API+"/";
 	private btfs_api_endpoint = "http://"+process.env.BTFS_HOST+":"+process.env.BTFS_API_ENDPOINT+"/";
+	private token: string;
 	static getInstance(): BtfsProvider {
 		if (!BtfsProvider.instance) {
 			BtfsProvider.instance = new BtfsProvider();
@@ -20,13 +22,22 @@ class BtfsProvider{
 			// const response = await axios.get(this.btfs_api_endpoint+"btfs/QmNytdpG1FstSmR7eo547A8o9EdF7cFe1tcExunu8uEgDc");
 			if (response.status != 200) throw new Error("Error pinging BTFS");
 		} catch (err) {throw new Error("Error pinging BTFS:"+err);}
+		return this;
+	}
+	async fetchToken() {
+		try {
+			const res = await axios.get(process.env.BTFS_TOKEN_ACCESS_URL);
+			this.token = res.data.token;
+			console.log("the token for the access: ", this.token);
+		} catch (err) {throw new Error("Error fetching token from BTFS:"+err);}
+		return this;
 	}
 	async addFile(filPath){
 		try{
 			const fileStream = fs.createReadStream(filPath)
 			const form = new formData();
 			form.append("file",fileStream);
-			const response = await axios.post(this.btfs_api_endpoint+"api/v0/add?to-blockchain=true&token="+process.env.BTFS_TOKEN,form,{
+			const response = await axios.post(this.btfs_api_endpoint+"api/v0/add?to-blockchain=true&token="+this.token,form,{
 				headers: form.getHeaders()
 			});
 			return response.data;
@@ -37,7 +48,7 @@ class BtfsProvider{
 	}
 	async removeFile(fileHash){
 		try{
-			const response = await axios.post(this.btfs_api_endpoint+"api/v1/files/rm?arg="+fileHash+"&token="+process.env.BTFS_TOKEN);
+			const response = await axios.post(this.btfs_api_endpoint+"api/v1/files/rm?arg="+fileHash+"&token="+this.token);
 			return response.data;
 		}catch(err){
 			console.log("BTFS_PROVIDER_removeFileError:"+err);
@@ -47,7 +58,7 @@ class BtfsProvider{
 	async uploadFile(fileHash, rentforDays?){
 		rentforDays = rentforDays || 31;
 		try{
-			const response = await axios.post(this.btfs_api_endpoint+`api/v1/storage/upload?arg=${fileHash}&storage-length=${rentforDays}`+"&token="+process.env.BTFS_TOKEN);
+			const response = await axios.post(this.btfs_api_endpoint+`api/v1/storage/upload?arg=${fileHash}&storage-length=${rentforDays}`+"&token="+this.token);
 			return response.data;
 		}catch(err){
 			console.log("BTFS_PROVIDER_uploadFileError:"+err);
@@ -59,7 +70,7 @@ class BtfsProvider{
 			throw new Error("ID is required to get status from BTFS.");
 		}
 		try{
-			const response = await axios.post(this.btfs_api_endpoint+"api/v1/storage/upload/status?arg="+ID+"&token="+process.env.BTFS_TOKEN);
+			const response = await axios.post(this.btfs_api_endpoint+"api/v1/storage/upload/status?arg="+ID+"&token="+this.token);
 			return response.data;
 		}catch(err){
 			console.log("BTFS_PROVIDER_getStatusError:"+err);

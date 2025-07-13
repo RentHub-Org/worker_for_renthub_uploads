@@ -5,7 +5,9 @@ import take_task_and_upload from "./scripts/take_task_and_upload_to_btfs";
 import take_success_task_and_checck_status from "./scripts/take_success_task_and_checck_status";
 
 async function main(){
-	await Btfs.ping().then(()=>{
+	await Btfs.fetchToken().then(()=>{
+		return Btfs.ping();
+	}).then(()=>{
 		console.log("✅ Btfs node is present and accesible...");
 	}).catch((err)=>{
 		console.log("❌ Could't connct to a btfs node... exiting the process...");
